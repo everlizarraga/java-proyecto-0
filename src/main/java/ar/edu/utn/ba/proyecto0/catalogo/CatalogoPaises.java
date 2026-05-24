@@ -1,5 +1,6 @@
 package ar.edu.utn.ba.proyecto0.catalogo;
 
+import ar.edu.utn.ba.proyecto0.modelo.DetalleMoneda;
 import ar.edu.utn.ba.proyecto0.modelo.Pais;
 
 import java.util.*;
@@ -10,12 +11,60 @@ public class CatalogoPaises {
 
     public CatalogoPaises() {
         this.paises = new ArrayList<>();
-        this.paises.add(new Pais("Argentina", "Buenos Aires", "Americas", 45000000L));
-        this.paises.add(new Pais("Brasil", "Brasilia", "Americas", 210000000L));
-        this.paises.add(new Pais("Chile", "Santiago", "Americas", 19000000L));
-        this.paises.add(new Pais("España", "Madrid", "Europe", 47000000L));
-        this.paises.add(new Pais("Francia", "París", "Europe", 67000000L));
-        this.paises.add(new Pais("Japón", "Tokio", "Asia", 125000000L));
+
+        this.paises.add(new Pais(
+                "Argentina",
+                "Buenos Aires",
+                "Americas",
+                45000000L,
+                Map.of("ARS", new DetalleMoneda("Argentine peso", "$")),
+                Map.of("spa", "Spanish")
+        ));
+
+        this.paises.add(new Pais(
+                "Brasil",
+                "Brasilia",
+                "Americas",
+                210000000L,
+                Map.of("BRL", new DetalleMoneda("Brazilian real", "R$")),
+                Map.of("por", "Portuguese")
+        ));
+
+        this.paises.add(new Pais(
+                "Chile",
+                "Santiago",
+                "Americas",
+                19000000L,
+                Map.of("CLP", new DetalleMoneda("Chilean peso", "$")),
+                Map.of("spa", "Spanish")
+        ));
+
+        this.paises.add(new Pais(
+                "España",
+                "Madrid",
+                "Europe",
+                47000000L,
+                Map.of("EUR", new DetalleMoneda("Euro", "€")),
+                Map.of("spa", "Spanish")
+        ));
+
+        this.paises.add(new Pais(
+                "Francia",
+                "París",
+                "Europe",
+                67000000L,
+                Map.of("EUR", new DetalleMoneda("Euro", "€")),
+                Map.of("fra", "French")
+        ));
+
+        this.paises.add(new Pais(
+                "Japón",
+                "Tokio",
+                "Asia",
+                125000000L,
+                Map.of("JPY", new DetalleMoneda("Japanese yen", "¥")),
+                Map.of("jpn", "Japanese")
+        ));
     }
 
     public List<Pais> getTodos() {
@@ -106,6 +155,33 @@ public class CatalogoPaises {
                 .sorted(Comparator.comparing(Pais::getNombre))
                 //.sorted(Comparator.comparing(Pais::getNombre).reversed()) // Ordenar al reves
                 .toList();
+    }
+
+    public List<Pais> buscarPorMoneda(String codigoMoneda) {
+        return this.paises.stream()
+                .filter(p -> p.getMonedas().containsKey(codigoMoneda))
+                .toList();
+    }
+
+    public Set<String> todosLosIdiomas() {
+        return this.paises.stream()
+                .flatMap(p -> p.getIdiomas().values().stream())
+                .collect(Collectors.toSet());
+        /*
+        País 1: stream("Spanish")             ┐
+        País 2: stream("Portuguese")          │
+        País 3: stream("Spanish")             │ flatMap los junta:
+        País 4: stream("Spanish")             │ → stream("Spanish", "Portuguese",
+        País 5: stream("French")              │           "Spanish", "Spanish",
+        País 6: stream("Japanese")            ┘           "French", "Japanese")
+        * */
+    }
+
+    public Map<String, List<Pais>> paisesAgrupadosPorMonedaPrincipal() {
+        return this.paises.stream()
+                .collect(Collectors.groupingBy(
+                        p -> p.getMonedas().keySet().iterator().next()
+                ));
     }
 
 }

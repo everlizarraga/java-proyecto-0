@@ -1,6 +1,7 @@
 package ar.edu.utn.ba.proyecto0;
 
 import ar.edu.utn.ba.proyecto0.catalogo.CatalogoPaises;
+import ar.edu.utn.ba.proyecto0.modelo.DetalleMoneda;
 import ar.edu.utn.ba.proyecto0.modelo.Pais;
 
 import java.util.*;
@@ -11,42 +12,59 @@ public class Main {
     public static void main(String[] args) {
         CatalogoPaises catalogo = new CatalogoPaises();
 
-        // === Búsquedas con streams ===
-        System.out.println("=== Buscar Argentina ===");
-        catalogo.buscarPorNombre("Argentina")
-                .ifPresent(System.out::println);
-
-        // === País más poblado ===
-        System.out.println("\n=== Más poblado ===");
-        catalogo.paisMasPoblado()
-                .ifPresent(p -> System.out.println(p.getNombre() + ": " + p.getPoblacion()));
-
-        // === Población total ===
-        System.out.println("\n=== Población total ===");
-        System.out.println("Total: " + catalogo.poblacionTotal());
-
-        // === Nombres concatenados ===
-        System.out.println("\n=== Nombres ===");
-        System.out.println(catalogo.nombresConcatenados());
-
-        // === Conteo por región ===
-        System.out.println("\n=== Por región ===");
-        Map<String, Long> conteo = catalogo.contarPorRegion();
-        conteo.forEach((region, cantidad) ->
-                System.out.println(region + ": " + cantidad)
-        );
-
-        // === Ordenado alfabéticamente ===
-        System.out.println("\n=== Alfabético ===");
-        catalogo.paisesOrdenadosAlfabeticamente()
+        System.out.println("\n=== Países que usan EUR ===");
+        catalogo.buscarPorMoneda("EUR")
                 .forEach(p -> System.out.println("  - " + p.getNombre()));
 
-        // === Stream inline en Main (sin método del catálogo) ===
-        System.out.println("\n=== Países con más de 50M de habitantes ===");
-        catalogo.getTodos().stream()
-                .filter(p -> p.getPoblacion() > 50_000_000L)
-                .map(Pais::getNombre)
-                .forEach(n -> System.out.println("  - " + n));
+        System.out.println("\n=== Países que usan ARS ===");
+        catalogo.buscarPorMoneda("ARS")
+                .forEach(p -> System.out.println("  - " + p.getNombre()));
+
+        System.out.println("===============");
+        Map<String, DetalleMoneda> monedas = catalogo.buscarPorNombre("Argentina")
+                .map(Pais::getMonedas)
+                .orElse(Map.of());
+
+        monedas.forEach((codigo, detalle) ->
+                System.out.println(codigo + " → " + detalle.getNombre() + " (" + detalle.getSimbolo() + ")")
+        );
+
+        System.out.println("=====================");
+        // Solo claves:
+        for (String codigo : monedas.keySet()) {
+            System.out.println("Código: " + codigo);
+        }
+
+        // Solo valores:
+        for (DetalleMoneda detalle : monedas.values()) {
+            System.out.println("Moneda: " + detalle.getNombre());
+        }
+
+        System.out.println("=====================");
+        monedas.entrySet().stream()
+                .filter(entry -> entry.getValue().getSimbolo().equals("$"))
+                .forEach(entry ->
+                        System.out.println(entry.getKey() + " usa el símbolo $ -- " + entry.getValue())
+                );
+
+        System.out.println("=====================");
+        System.out.println("\n=== Idiomas únicos en el catálogo ===");
+        catalogo.todosLosIdiomas()
+                .forEach(System.out::println);
+
+
+        System.out.println("=====================");
+        System.out.println("\n=== Países por moneda ===");
+        catalogo.paisesAgrupadosPorMonedaPrincipal()
+                .forEach((moneda, lista) -> {
+                    System.out.println(moneda + ":");
+                    lista.forEach(p -> System.out.println("  - " + p.getNombre()));
+                });
+
+        System.out.println("=====================");
+        System.out.println("=====================");
+        System.out.println("=====================");
+
     }
 
 }
