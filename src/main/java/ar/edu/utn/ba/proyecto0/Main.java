@@ -9,62 +9,28 @@ import java.util.stream.Collectors;
 
 public class Main {
 
-    public static void main(String[] args) {
-        CatalogoPaises catalogo = new CatalogoPaises();
+  public static void main(String[] args) {
+    CatalogoPaises catalogo = new CatalogoPaises();
+    System.out.println("Todos los idiomas: ");
+    catalogo.todosLosIdiomas().forEach(p -> System.out.println("> " + p));
+    System.out.println("Todos los idiomas 2:");
+    catalogo.todosLosIdiomas2().forEach(p -> System.out.println(">> " + p));
 
-        System.out.println("\n=== Países que usan EUR ===");
-        catalogo.buscarPorMoneda("EUR")
-                .forEach(p -> System.out.println("  - " + p.getNombre()));
-
-        System.out.println("\n=== Países que usan ARS ===");
-        catalogo.buscarPorMoneda("ARS")
-                .forEach(p -> System.out.println("  - " + p.getNombre()));
-
-        System.out.println("===============");
-        Map<String, DetalleMoneda> monedas = catalogo.buscarPorNombre("Argentina")
-                .map(Pais::getMonedas)
-                .orElse(Map.of());
-
-        monedas.forEach((codigo, detalle) ->
-                System.out.println(codigo + " → " + detalle.getNombre() + " (" + detalle.getSimbolo() + ")")
-        );
-
-        System.out.println("=====================");
-        // Solo claves:
-        for (String codigo : monedas.keySet()) {
-            System.out.println("Código: " + codigo);
-        }
-
-        // Solo valores:
-        for (DetalleMoneda detalle : monedas.values()) {
-            System.out.println("Moneda: " + detalle.getNombre());
-        }
-
-        System.out.println("=====================");
-        monedas.entrySet().stream()
-                .filter(entry -> entry.getValue().getSimbolo().equals("$"))
-                .forEach(entry ->
-                        System.out.println(entry.getKey() + " usa el símbolo $ -- " + entry.getValue())
-                );
-
-        System.out.println("=====================");
-        System.out.println("\n=== Idiomas únicos en el catálogo ===");
-        catalogo.todosLosIdiomas()
-                .forEach(System.out::println);
-
-
-        System.out.println("=====================");
-        System.out.println("\n=== Países por moneda ===");
-        catalogo.paisesAgrupadosPorMonedaPrincipal()
-                .forEach((moneda, lista) -> {
-                    System.out.println(moneda + ":");
-                    lista.forEach(p -> System.out.println("  - " + p.getNombre()));
-                });
-
-        System.out.println("=====================");
-        System.out.println("=====================");
-        System.out.println("=====================");
-
-    }
+    System.out.println("==================");
+    System.out.println("Cantidad de idiomas unicos: " + catalogo.cantidadIdiomasUnicos());
+    System.out.println("==================");
+    System.out.println("Lista de símbolos de moneda  : " + catalogo.simbolosDeMoneda());
+    System.out.println("Lista de símbolos de moneda 2: " + catalogo.simbolosDeMoneda2());
+    System.out.println("==================");
+    System.out.println("Pais con mas idiomas: " + catalogo.paisConMasIdiomas());
+    System.out.println("==================");
+    System.out.println("Hay pais plurilingue: " + catalogo.hayPaisPlurilingue());
+    System.out.println("==================");
+    System.out.println("Map<String, List<Pais>>: " + catalogo.paisesPorIdioma());
+    catalogo.paisesPorIdioma().forEach((key, value) -> {
+      System.out.println("> " + key + ": " + value.stream().map(Pais::getNombre).toList());
+    });
+    System.out.println("==================");
+  }
 
 }
