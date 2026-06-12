@@ -31,6 +31,9 @@ public class Main {
       System.out.println("> " + key + ": " + value.stream().map(Pais::getNombre).toList());
     });
     System.out.println("==================");
+    System.out.println("Países concatenados: " + catalogo.nombresConcatenados());
+    System.out.println("Todos los idiomas: " + catalogo.todosLosIdiomas2());
+    System.out.println("Todos los idiomas: " + catalogo.todosLosIdiomas());
   }
 
 }
