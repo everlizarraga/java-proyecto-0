@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CatalogoPaisesTest {
@@ -72,9 +73,10 @@ public class CatalogoPaisesTest {
         //.containsExactly("Argentina", "Brasil", "Chile");           // Están exactamente estos, en este orden
         //.containsExactly("Argentina", "Brasil", "Chile");           // Están exactamente estos, en este orden
         .containsExactlyInAnyOrder("Argentina", "Brasil", "Chile"); // Están exactamente estos, en cualquier orden
-        //.containsOnly("Argentina", "Brasil", "Chile");        // Solo estos, sin importar duplicados
+    //.containsOnly("Argentina", "Brasil", "Chile");        // Solo estos, sin importar duplicados
   }
 
+  /*
   @Test
   void buscarPorRegionInexistenteDevuelveListaVacia() {
     // Act
@@ -82,6 +84,14 @@ public class CatalogoPaisesTest {
 
     // Assert
     assertThat(resultados).isEmpty();
+  }
+  */
+
+  @Test
+  @DisplayName("Buscar por region desconocida lanza RegionDesconocidaException")
+  void buscarPorRegionInexistente_lanzaRegionDesconocidaException() {
+    assertThatThrownBy(() -> catalogo.buscarPorRegion("Atlantis"))
+        .isInstanceOf(RegionDesconocidaException.class);
   }
 
   @Test
@@ -175,5 +185,36 @@ public class CatalogoPaisesTest {
   void todosEstosPaisesExistenEnElCatalogo(String nombre) {
     assertThat(catalogo.buscarPorNombre(nombre)).isPresent();
   }
+
+  // ETAPA 8 - TESTEAR EXCEPCIONES
+
+  /*
+  assertThatThrownBy(lambda) — ejecuta la lambda y verifica que tire excepción.
+  .isInstanceOf(Clase.class) — verifica el tipo.
+  .hasMessage("...") — mensaje exacto.
+  .hasMessageContaining("...") — el mensaje contiene esto.
+  .hasMessageStartingWith("...") — empieza con esto.
+  * */
+
+  @Test
+  void buscarPorNombreObligatorio_paisInexistente_lanzaExcepcion() {
+    assertThatThrownBy(() -> catalogo.buscarPorNombreObligatorio("Atlantis"))
+        .isInstanceOf(PaisNoEncontradoException.class)
+        .hasMessageContaining("Atlantis");
+  }
+
+  @Test
+  void buscarPorNombreObligatorio_null_lanzaIllegalArgument() {
+    assertThatThrownBy(() -> catalogo.buscarPorNombreObligatorio(null))
+        .isInstanceOf(NullPointerException.class);
+  }
+
+  @Test
+  void buscarPorNombreObligatorio_vacio_lanzaIllegalArgument() {
+    assertThatThrownBy(() -> catalogo.buscarPorNombreObligatorio(""))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("vacío");
+  }
+
 
 }

@@ -79,6 +79,18 @@ public class CatalogoPaises {
     return this.paises.size();
   }
 
+  public Pais buscarPorNombreObligatorio(String nombre) {
+    //Objects.requireNonNull(nombre, "El nombre no puede ser null");
+    if(nombre == null) {
+      throw new NullPointerException("El nombre no puede ser null");
+    }
+    if(nombre.isBlank()) {
+      throw new IllegalArgumentException("El nombre no puede estar vacío");
+    }
+    return this.buscarPorNombre(nombre)
+        .orElseThrow(() -> new PaisNoEncontradoException(nombre));
+  }
+
   public Optional<Pais> buscarPorNombre(String nombre) {
     return this.paises.stream()
         .filter(p -> nombre.equals(p.getNombre()))
@@ -92,10 +104,18 @@ public class CatalogoPaises {
   }
 
   public List<Pais> buscarPorRegion(String region) {
-    return this.paises.stream()
+    var paisesPorRegion = this.paises.stream()
         .filter(p -> p.getRegion().equals(region))
         //.collect(Collectors.toList());
         .collect(Collectors.toCollection(ArrayList::new));
+    if(paisesPorRegion.isEmpty()) { // paisesPorRegion.size() == 0
+      List<String> regionesDisponibles = this.contarPorRegion()
+          .keySet()
+          .stream()
+          .toList();
+      throw new RegionDesconocidaException(region, regionesDisponibles);
+    }
+    return paisesPorRegion;
   }
 
   public Optional<Pais> primerPaisPoblacionMayorA(long limite) {

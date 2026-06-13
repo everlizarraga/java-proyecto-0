@@ -7,6 +7,7 @@ import lombok.NonNull;
 import lombok.ToString;
 
 import java.util.Map;
+import java.util.Objects;
 
 @Data
 @AllArgsConstructor
@@ -25,6 +26,17 @@ public class Pais {
   public String toLineString() {
     return this.nombre + " - " + this.capital + " - " + this.region + " - " + this.poblacion;
   }
+
+  public static Pais crear(String nombre, String capital, String region, long poblacion, Map<String,DetalleMoneda> detalleMoneda, Map<String,String> idiomas) {
+    Objects.requireNonNull(nombre, "nombre");
+    if(capital == null) {
+      throw new NullPointerException("La capital no puede ser null");
+    }
+    if(poblacion < 0) {
+      throw new IllegalArgumentException("La población no puede ser negativa");
+    }
+    return new Pais(nombre, capital, region, poblacion, detalleMoneda, idiomas);
+  }
 }
 
 /*
@@ -36,21 +48,4 @@ new Pais(
     Map.of("ARS", new DetalleMoneda("Argentine peso", "$")),
     Map.of("spa", "Spanish")
 )
-* */
-
-/*
-*
-Map<String, String> idiomas = new HashMap<>();
-idiomas.put("spa", "Spanish");                 // agregar/actualizar
-idiomas.put("eng", "English");
-
-String nombre = idiomas.get("spa");             // recuperar (devuelve null si no existe)
-boolean hay = idiomas.containsKey("fra");       // chequear si existe
-int cantidad = idiomas.size();                  // cuántas entradas
-
-// Iterar:
-idiomas.forEach((codigo, nombreIdioma) ->
-    System.out.println(codigo + " → " + nombreIdioma)
-);
-*
 * */
