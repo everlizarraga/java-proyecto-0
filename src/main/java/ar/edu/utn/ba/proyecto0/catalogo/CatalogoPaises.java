@@ -1,13 +1,21 @@
 package ar.edu.utn.ba.proyecto0.catalogo;
 
+import ar.edu.utn.ba.proyecto0.io.CargadorDePaisesDesdeCSV;
 import ar.edu.utn.ba.proyecto0.modelo.DetalleMoneda;
 import ar.edu.utn.ba.proyecto0.modelo.Pais;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class CatalogoPaises {
   private List<Pais> paises;
+
+  public CatalogoPaises(Path archivoCSV) throws IOException {
+    CargadorDePaisesDesdeCSV cargador = new CargadorDePaisesDesdeCSV();
+    this.paises = new ArrayList<>(cargador.cargarDesde(archivoCSV));
+  }
 
   public CatalogoPaises() {
     this.paises = new ArrayList<>(); // Lista mutable
